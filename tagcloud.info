@@ -1,0 +1,5 @@
+name = TagCloud > tagcloud.info
+git add tagcloud.info
+git commit -a Initial commit.
+gir temote add origin mgparisi@git.drupal.org:sandbox/mgparisi/1282854.git
+echo name = TagCloud
