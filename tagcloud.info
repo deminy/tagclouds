@@ -1,5 +1,9 @@
-name = TagCloud > tagcloud.info
-git add tagcloud.info
-git commit -a Initial commit.
-gir temote add origin mgparisi@git.drupal.org:sandbox/mgparisi/1282854.git
-echo name = TagCloud
+name = Tag Cloud
+description = TagCloud makes weighted tag clouds from your taxonomy terms.
+core = 7.x
+dependencies[] = taxonomy
+package = "Taxonomy"
+configure = admin/config/content/tagcloud
+
+files[] = tagcloud.module
+files[] = tagcloud.install
