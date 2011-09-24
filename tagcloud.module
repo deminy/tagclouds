@@ -434,10 +434,6 @@ function tagcloud_block_view($delta = '') {
 function tagcloud_block_configure($delta = '') {
   //$voc = taxonomy_vocabulary_load($delta);  **Why is this here!
   $form = array();
-  $options = array( 
-        'title,asc' => t('by title, ascending'), 'title,desc' => t('by title, descending'), 
-        'count,asc' => t('by count, ascending'), 'count,desc' => t('by count, descending'), 
-        'random,none' => t('random'));
   
   $form['tags'] = array(
     '#type' => 'textfield',
@@ -446,7 +442,6 @@ function tagcloud_block_configure($delta = '') {
     '#maxlength' => 3,
     '#description' => t('The number of tags to show in this block.'),
   );
-  dsm("tag_cloud_block_configure - BlockDisplay$delta=" . variable_get('tagcloud_block_display_' . $delta, ''));
   return $form;
 }
 
