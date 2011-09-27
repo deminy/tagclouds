@@ -198,7 +198,14 @@ function tagcloud_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     if (!is_array($vids) || count($vids) == 0) {
       return array();
     }
+    $sql = 'SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description, tn.nid FROM 
+      {taxonomy_term_data} td INNER JOIN {taxonomy_index} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.nid = n.nid 
+      WHERE td.vid IN (' . implode(',', array_fill(0, count($vids), '?')) . ') 
+        GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC';
 
+
+    $result = db_query_range($sql, 0, $size, $vids);
+    /**
     $query = db_select('taxonomy_term_data', 'td');
     $query->addExpression('COUNT(*)', 'count');
     $query->fields('td',array('tid', 'vid', 'name', 'description'));
@@ -210,8 +217,8 @@ function tagcloud_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     $query->groupBy('td.description HAVING COUNT(*) > 0');
     $query->orderBy('count', 'DESC');
     $result = $query->execute();
-
-    foreach ($result as $tag) {
+    */
+   foreach ($result as $tag) {
       $tags[$tag->tid] = $tag;  
     }
     if ($display == NULL) $display = variable_get('tagcloud_display_type', 'style');
