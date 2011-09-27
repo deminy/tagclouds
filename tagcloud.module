@@ -198,25 +198,17 @@ function tagcloud_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     if (!is_array($vids) || count($vids) == 0) {
       return array();
     }
-$sql = 'SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description, tn.nid FROM 
-  {taxonomy_term_data} td INNER JOIN {taxonomy_index} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.nid = n.nid 
-  WHERE td.vid IN (' . implode(',', array_fill(0, count($vids), '?')) . ')   
-    GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC';
-//dsm($sql);
 
-$result = db_query_range($sql, 0, $size, $vids);
-    /** Does not Quite work.  
     $query = db_select('taxonomy_term_data', 'td');
     $query->addExpression('COUNT(*)', 'count');
     $query->fields('td',array('tid', 'vid', 'name', 'description'));
     $query->join('taxonomy_index', 'tn', 'td.tid = tn.tid');
     $query->join('node', 'n', 'tn.nid = n.nid');
-    //$query->condition('td.vid', implode(',', array_fill(0, count($vids), '?')), 'in'); /**not returning ?
+    $query->condition('td.vid', $vids); /// not returning ?
     $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');    
     $query->groupBy('td.description HAVING COUNT(*) > 0');
     $query->orderBy('count', 'DESC');
-    dsm($query->__toString());
-    $result = $query->execute();**/
+    $result = $query->execute();
 
     foreach ($result as $tag) {
       $tags[$tag->tid] = $tag;  
