@@ -1,0 +1,81 @@
+From 21ee86970d346eb25dffe83ed7c5ea0e93928ee0 Mon Sep 17 00:00:00 2001
+From: Ted Cooper <elc@784944.no-reply.drupal.org>
+Date: Sun, 2 Oct 2011 01:37:53 +1000
+Subject: [PATCH] Fix PDO range bug
+
+Also removed some spares lines,
+and removed a second COUNT(*) from the SQL
+---
+ tagcloud.module |   20 ++++++--------------
+ 1 files changed, 6 insertions(+), 14 deletions(-)
+
+diff --git a/tagcloud.module b/tagcloud.module
+index 45bf690..de93781 100644
+--- a/tagcloud.module
++++ b/tagcloud.module
+@@ -198,33 +198,26 @@ function tagcloud_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
+     if (!is_array($vids) || count($vids) == 0) {
+       return array();
+     }
+-    $sql = 'SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description, tn.nid FROM 
+-      {taxonomy_term_data} td INNER JOIN {taxonomy_index} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.nid = n.nid 
+-      WHERE td.vid IN (' . implode(',', array_fill(0, count($vids), '?')) . ') 
+-        GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC';
+ 
+-
+-    $result = db_query_range($sql, 0, $size, $vids);
+-    /**
+     $query = db_select('taxonomy_term_data', 'td');
+     $query->addExpression('COUNT(*)', 'count');
+     $query->fields('td',array('tid', 'vid', 'name', 'description'));
+     $query->fields('tn',array('nid'));
+     $query->join('taxonomy_index', 'tn', 'td.tid = tn.tid');
+     $query->join('node', 'n', 'tn.nid = n.nid');
+-    $query->condition('td.vid', $vids); /// not returning ?
++    $query->condition('td.vid', $vids);
+     $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');    
+-    $query->groupBy('td.description HAVING COUNT(*) > 0');
++    $query->groupBy('td.description HAVING count > 0');
+     $query->orderBy('count', 'DESC');
++    $query->range(0, $size);
+     $result = $query->execute();
+-    */
+-   foreach ($result as $tag) {
++
++    foreach ($result as $tag) {
+       $tags[$tag->tid] = $tag;  
+     }
+     if ($display == NULL) $display = variable_get('tagcloud_display_type', 'style');
+     $tags = tagcloud_build_weighted_tags($tags, $steps);
+     
+-    
+     cache_set($cache_name, $tags, 'cache_page', CACHE_TEMPORARY);
+   }
+   
+@@ -309,7 +302,6 @@ function _tagcloud_sort_by_title($a, $b) {
+   return strnatcasecmp($a->name, $b->name);
+ }
+ 
+-
+ function _tagcloud_sort_by_count($a, $b) {
+   return $a->count > $b->count;
+ }
+@@ -325,7 +317,6 @@ function theme_tagcloud_weighted(array $vars) {
+   $output = '';
+   $display = variable_get('tagcloud_display_type', 'style');
+   
+-
+   if ($display=='style') {
+     foreach ($terms as $term) {
+       $output .= "<span id='tagcloud-term'>" . tagcloud_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description) . "</span>\n";      
+@@ -371,6 +362,7 @@ function tagcloud_display_term_link_count($name, $tid, $count, $description) {
+     array('attributes' => array('class' => array("tagcloud"), 'rel' => 'tag', 'title'  => $description, ))
+   );  
+ }
++
+ /**
+  * Theme function that renders an entry in tagcloud/list/ views.
+  *
+-- 
+1.7.2.5
+
