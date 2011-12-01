@@ -319,12 +319,12 @@ function theme_tagclouds_weighted(array $vars) {
   
   if ($display=='style') {
     foreach ($terms as $term) {
-      $output .= "<span id='tagclouds-term'>" . tagclouds_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description) . "</span>\n";      
+      $output .= "<span class='tagclouds-term'>" . tagclouds_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description) . "</span>\n";      
     }
   }
   else {
     foreach ($terms as $term) {
-      $output .= "<span id='tagclouds-term'>";
+      $output .= "<span class='tagclouds-term'>";
       if ($term->count==1) {
          $output .= tagclouds_display_node_link_count($term->name, $term->nid, $term->count, $term->description);
       }
