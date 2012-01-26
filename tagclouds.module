@@ -61,11 +61,11 @@ function tagclouds_menu() {
  * Menu callback. Admin setting page for tagclouds.
  */
 function tagclouds_settings() {
-  $options = array( 
-        'title,asc' => t('by title, ascending'), 'title,desc' => t('by title, descending'), 
-        'count,asc' => t('by count, ascending'), 'count,desc' => t('by count, descending'), 
+  $options = array(
+        'title,asc' => t('by title, ascending'), 'title,desc' => t('by title, descending'),
+        'count,asc' => t('by count, ascending'), 'count,desc' => t('by count, descending'),
         'random,none' => t('random'));
-  
+
   $form['tagclouds_sort_order'] = array(
     '#type' => 'radios',
     '#title' => t('Tagclouds sort order'),
@@ -80,14 +80,14 @@ function tagclouds_settings() {
     '#options' => $options_display,
     '#default_value' => variable_get('tagclouds_display_type', 'style'),
     '#description' => t('Determines the style of the page.'),
-  );  
+  );
   $form['tagclouds_page_amount'] = array(
     '#type' => 'textfield',
     '#size' => 5,
     '#title' => t('Amount of tags on the pages'),
     '#default_value' => variable_get('tagclouds_page_amount', '60'),
-    '#description' => t('The amount of tags that will show up in a cloud on the 
-      pages. Amount of tags in blocks must be configured in the block settings 
+    '#description' => t('The amount of tags that will show up in a cloud on the
+      pages. Amount of tags in blocks must be configured in the block settings
       of the various cloud blocks.'),
   );
   $form['tagclouds_levels'] = array(
@@ -95,11 +95,11 @@ function tagclouds_settings() {
     '#size' => 5,
     '#title' => t('Number of levels'),
     '#default_value' => variable_get('tagclouds_levels', 6),
-    '#description' => t('The number of levels between the least popular 
-      tags and the most popular ones. Different levels will be assigned a different 
+    '#description' => t('The number of levels between the least popular
+      tags and the most popular ones. Different levels will be assigned a different
       class to be themed in tagclouds.css'),
   );
-  
+
   $lang = language_list('enabled');
   if(!empty($lang) && count($lang[1]) > 1){
     $form['tagclouds_language_separation'] = array(
@@ -185,8 +185,8 @@ function tagclouds_page_list($vocs) {
  *   The number of tags that will be returned.
  * @param $display OPTIONAL
  *   The type of display "style"=weighted,"count"=numbered display
- *   
- * @return 
+ *
+ * @return
  *   An <em>unordered</em> array with tags-objects, containing the attribute
  *   $tag->weight.
  */
