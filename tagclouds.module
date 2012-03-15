@@ -86,9 +86,9 @@ function tagclouds_settings() {
     '#size' => 5,
     '#title' => t('Amount of tags on the pages'),
     '#default_value' => variable_get('tagclouds_page_amount', '60'),
-    '#description' => t('The amount of tags that will show up in a cloud on the
-      pages. Amount of tags in blocks must be configured in the block settings
-      of the various cloud blocks.'),
+    '#description' => t("The amount of tags that will show up in a cloud on the
+      pages. Enter '0' to display all tags. Amount of tags in blocks must be
+      configured in the block settings of the various cloud blocks."),
   );
   $form['tagclouds_levels'] = array(
     '#type' => 'textfield',
@@ -218,10 +218,11 @@ function tagclouds_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     $query->join('node', 'n', 'tn.nid = n.nid');
     if (variable_get('tagclouds_language_separation', 0)) $query->condition('n.language', $language->language);
     $query->condition('td.vid', $vids);
+    $query->condition('n.status', 1);
     $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');    
     $query->groupBy('td.description HAVING count > 0');
     $query->orderBy('count', 'DESC');
-    $query->range(0, $size);
+    if ($size > 0) $query->range(0, $size);
     $result = $query->execute();
 
     foreach ($result as $tag) {
@@ -425,7 +426,7 @@ function tagclouds_block_view($delta = '') {
     $tags = tagclouds_sort_tags($tags);
 
     $blocks['content'] = theme('tagclouds_weighted', array('terms' => $tags)); //return a chunk of 12 tags
-    if (count($tags) >= variable_get('tagclouds_block_tags_' . $delta, 12)) {
+    if (count($tags) >= variable_get('tagclouds_block_tags_' . $delta, 12) && variable_get('tagclouds_block_tags_' . $delta, 12) > 0) {
       $blocks['content'] .= theme('more_link', array('title' => t('more tags'), 'url' => "tagclouds/chunk/{$voc->vid}"));
     }
   }
@@ -436,7 +437,6 @@ function tagclouds_block_view($delta = '') {
  * Implements hook_block_configure().
  */
 function tagclouds_block_configure($delta = '') {
-  //$voc = taxonomy_vocabulary_load($delta);  **Why is this here!
   $form = array();
   
   $form['tags'] = array(
@@ -444,7 +444,7 @@ function tagclouds_block_configure($delta = '') {
     '#title' => t('Tags to show'),
     '#default_value' => variable_get('tagclouds_block_tags_' . $delta, 12),
     '#maxlength' => 3,
-    '#description' => t('The number of tags to show in this block.'),
+    '#description' => t("The number of tags to show in this block. Enter '0' to display all tags."),
   );
   return $form;
 }
