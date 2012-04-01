@@ -355,9 +355,14 @@ function theme_tagclouds_weighted(array $vars) {
  * 
  */
 function tagclouds_display_term_link_weight($name, $tid, $weight, $description) {
-  return l($name, 'taxonomy/term/' . $tid, 
-          array('attributes' => array('class' => array("tagclouds", "level" . $weight), 'rel' => 'tag', 'title'  => $description, )) 
-     ) . " \n";
+  $taxonomy_term_info = entity_get_info('taxonomy_term');
+  $term = $taxonomy_term_info['load hook']($tid);
+  $uri = $taxonomy_term_info['uri callback']($term);
+  $uri['options']['attributes']['class'][] = 'tagclouds';
+  $uri['options']['attributes']['class'][] = 'level' . $weight;
+  $uri['options']['attributes']['rel'] = 'tag';
+  $uri['options']['attributes']['title'] = $description;
+  return l($name, $uri['path'], $uri['options']) . " \n";
 }
 
 /**
@@ -365,15 +370,23 @@ function tagclouds_display_term_link_weight($name, $tid, $weight, $description) 
  * 
  */
 function tagclouds_display_node_link_count($name, $nid, $count, $description) {
-  return l($name, 'node/' . $nid, 
-    array('attributes' => array('class' => array("tagclouds"), 'rel' => 'tag', ' title'  => $description, ))
-  );  
+  $node_info = entity_get_info('taxonomy_term');
+  $node = $node_info['load hook']($nid);
+  $uri = $node_info['uri callback']($node);
+  $uri['options']['attributes']['class'][] = 'tagclouds';
+  $uri['options']['attributes']['rel'] = 'tag';
+  $uri['options']['attributes']['title'] = $description;
+  return l($name, $uri['path'], $uri['options']);
 }
 
 function tagclouds_display_term_link_count($name, $tid, $count, $description) {
-  return l($name, 'taxonomy/term/' . $tid, 
-    array('attributes' => array('class' => array("tagclouds"), 'rel' => 'tag', 'title'  => $description, ))
-  );  
+  $taxonomy_term_info = entity_get_info('taxonomy_term');
+  $term = $taxonomy_term_info['load hook']($tid);
+  $uri = $taxonomy_term_info['uri callback']($term);
+  $uri['options']['attributes']['class'][] = 'tagclouds';
+  $uri['options']['attributes']['rel'] = 'tag';
+  $uri['options']['attributes']['title'] = $description;
+  return l($name, $uri['path'], $uri['options']);
 }
 
 /**
