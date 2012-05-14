@@ -435,7 +435,7 @@ function tagclouds_block_view($delta = '') {
   $block = array();
   if ($voc = taxonomy_vocabulary_load($delta)) {
     $blocks['subject'] = variable_get('tagclouds_block_title_' . $delta, t('Tags in @voc', 
-            array('@voc' => $voc->name)));
+            array('@voc' => t($voc->name))));
     $tags = tagclouds_get_tags(array($delta), variable_get('tagclouds_levels', 6), variable_get('tagclouds_block_tags_' . $delta, 12));
 
     //$tags = tagclouds_sort_tags($tags, "hook_block_view");;
