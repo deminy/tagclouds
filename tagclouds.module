@@ -408,9 +408,9 @@ function theme_tagclouds_list_box(array $vars) {
   $content = theme('tagclouds_weighted', array('terms' => $tags));
   $output = '';
   if ($vocabulary->description) {
-    $content = '<h2></h2><div>' . $vocabulary->description . '</div>' . $content;
+    $content = '<h2></h2><div>' . t($vocabulary->description) . '</div>' . $content;
   }
-  $output .= '<h2>' . $vocabulary->name . '</h2><div>' . $content . '</div>';
+  $output .= '<h2>' . t($vocabulary->name) . '</h2><div>' . $content . '</div>';
 
   return $output;
 }
