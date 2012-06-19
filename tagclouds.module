@@ -355,10 +355,9 @@ function theme_tagclouds_weighted(array $vars) {
  * 
  */
 function tagclouds_display_term_link_weight($name, $tid, $weight, $description) {
-  $taxonomy_term_info = entity_get_info('taxonomy_term');
-  if ($term = $taxonomy_term_info['load hook']($tid)) {
-    $uri = $taxonomy_term_info['uri callback']($term);
-    $uri['options']['attributes']['class'][] = 'tagclouds';
+  if ($term = taxonomy_term_load($tid)) {
+    $uri = entity_uri('taxonomy_term', $term);    
+	$uri['options']['attributes']['class'][] = 'tagclouds';
     $uri['options']['attributes']['class'][] = 'level' . $weight;
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
@@ -382,9 +381,8 @@ function tagclouds_display_node_link_count($name, $nid, $count, $description) {
 }
 
 function tagclouds_display_term_link_count($name, $tid, $count, $description) {
-  $taxonomy_term_info = entity_get_info('taxonomy_term');
-  if ($term = $taxonomy_term_info['load hook']($tid)) {
-    $uri = $taxonomy_term_info['uri callback']($term);
+  if ($term = taxonomy_term_load($tid)) {
+    $uri = entity_uri('taxonomy_term', $term);
     $uri['options']['attributes']['class'][] = 'tagclouds';
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
