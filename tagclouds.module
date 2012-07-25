@@ -117,7 +117,6 @@ function tagclouds_settings() {
  * Menu callback renders a tagclouds page.
  */
 function tagclouds_page_chunk($vocs) {
-
   if ($vocs == NULL) {
     foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
       $vocs[] = $vocabulary->vid;
