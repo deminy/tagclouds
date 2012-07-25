@@ -5,6 +5,7 @@ dependencies[] = taxonomy
 package = "Taxonomy"
 configure = admin/config/content/tagclouds
 
+<<<<<<< HEAD
 files[] = tagclouds.module
 ; Information added by drupal.org packaging script on 2012-06-20
 version = "7.x-1.4+5-dev"
@@ -12,3 +13,6 @@ core = "7.x"
 project = "tagclouds"
 datestamp = "1340152946"
 
+=======
+files[] = tagclouds.module
+>>>>>>> d0333aa3ef62dd83a2665d0dc49a05c250d15604
