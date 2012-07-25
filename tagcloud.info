@@ -1,9 +1,0 @@
-name = Tag Cloud
-description = TagCloud makes weighted tag clouds from your taxonomy terms.
-core = 7.x
-dependencies[] = taxonomy
-package = "Taxonomy"
-configure = admin/config/content/tagcloud
-
-files[] = tagcloud.module
-files[] = tagcloud.install
