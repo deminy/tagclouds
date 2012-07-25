@@ -478,3 +478,10 @@ function tagclouds_theme() {
     'tagclouds_weighted' => array('arguments' => array('terms' => array()))
   );
 }
+
+/**
+ * Implements hook_load()
+ */
+function tagclouds_vocs_load($ids){
+  return explode(',',$ids);
+}
