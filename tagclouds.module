@@ -331,19 +331,17 @@ function theme_tagclouds_weighted(array $vars) {
   
   if ($display=='style') {
     foreach ($terms as $term) {
-      $output .= "<span class='tagclouds-term'>" . tagclouds_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description) . "</span>\n";      
+      $output .= tagclouds_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description);      
     }
   }
   else {
     foreach ($terms as $term) {
-      $output .= "<span class='tagclouds-term'>";
       if ($term->count==1) {
          $output .= tagclouds_display_node_link_count($term->name, $term->nid, $term->count, $term->description);
       }
       else {
          $output .= tagclouds_display_term_link_count($term->name, $term->tid, $term->count, $term->description);
       }
-      $output .= " (" . $term->count . ")" . "</span>\n";
     }
   }
   return $output;
@@ -360,7 +358,7 @@ function tagclouds_display_term_link_weight($name, $tid, $weight, $description) 
     $uri['options']['attributes']['class'][] = 'level' . $weight;
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
-    return l($name, $uri['path'], $uri['options']) . " \n";
+    return "<span class='tagclouds-term'>" . l($name, $uri['path'], $uri['options']) . "</span>\n";      
   }
 }
 
@@ -375,7 +373,7 @@ function tagclouds_display_node_link_count($name, $nid, $count, $description) {
     $uri['options']['attributes']['class'][] = 'tagclouds';
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
-    return l($name, $uri['path'], $uri['options']);
+    return "<span class='tagclouds-term'>" . l($name, $uri['path'], $uri['options']) . " (" . $count . ")" . "</span>\n";
   }
 }
 
@@ -385,7 +383,7 @@ function tagclouds_display_term_link_count($name, $tid, $count, $description) {
     $uri['options']['attributes']['class'][] = 'tagclouds';
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
-    return l($name, $uri['path'], $uri['options']);
+    return "<span class='tagclouds-term'>" . l($name, $uri['path'], $uri['options']) . " (" . $count . ")" . "</span>\n";
   }
 }
 
