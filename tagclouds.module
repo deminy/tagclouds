@@ -337,7 +337,7 @@ function theme_tagclouds_weighted(array $vars) {
   else {
     foreach ($terms as $term) {
       if ($term->count==1) {
-         $output .= tagclouds_display_node_link_count($term->name, $term->nid, $term->count, $term->description);
+         $output .= tagclouds_display_node_link_count($term->name, $term->tid, $term->nid, $term->count, $term->description);
       }
       else {
          $output .= tagclouds_display_term_link_count($term->name, $term->tid, $term->count, $term->description);
@@ -366,10 +366,9 @@ function tagclouds_display_term_link_weight($name, $tid, $weight, $description) 
  * Display Single Tag with Style
  * 
  */
-function tagclouds_display_node_link_count($name, $nid, $count, $description) {
-  $node_info = entity_get_info('taxonomy_term');
-  if ($node = $node_info['load hook']($nid)) {
-    $uri = $node_info['uri callback']($node);
+function tagclouds_display_node_link_count($name, $tid, $nid, $count, $description) {
+  if ($term = taxonomy_term_load($tid) && $node = node_load($nid)) {
+    $uri = entity_uri('node', $node);
     $uri['options']['attributes']['class'][] = 'tagclouds';
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
