@@ -218,21 +218,21 @@ function tagclouds_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     if (variable_get('tagclouds_language_separation', 0)) $query->condition('n.language', $language->language);
     $query->condition('td.vid', $vids);
     $query->condition('n.status', 1);
-    $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');    
+    $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');
     $query->groupBy('td.description HAVING count > 0');
     $query->orderBy('count', 'DESC');
     if ($size > 0) $query->range(0, $size);
     $result = $query->execute();
 
     foreach ($result as $tag) {
-      $tags[$tag->tid] = $tag;  
+      $tags[$tag->tid] = $tag;
     }
     if ($display == NULL) $display = variable_get('tagclouds_display_type', 'style');
     $tags = tagclouds_build_weighted_tags($tags, $steps);
-    
+
     cache_set($cache_name, $tags, 'cache_page', CACHE_TEMPORARY);
   }
-  
+
   return $tags;
 }
 
@@ -289,7 +289,7 @@ function tagclouds_sort_tags($tags, $sort = NULL) {
  else {
    list($sort, $order) = explode(',', $sort);
  }
-  
+
   switch ($sort) {
     case 'title':
       usort($tags, "_tagclouds_sort_by_title");
@@ -324,14 +324,14 @@ function _tagclouds_sort_by_count($a, $b) {
  * @ingroup themable
  */
 function theme_tagclouds_weighted(array $vars) {
-  $terms = $vars['terms'];  
- 
+  $terms = $vars['terms'];
+
   $output = '';
   $display = variable_get('tagclouds_display_type', 'style');
-  
+
   if ($display=='style') {
     foreach ($terms as $term) {
-      $output .= tagclouds_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description);      
+      $output .= tagclouds_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description);
     }
   }
   else {
@@ -349,22 +349,22 @@ function theme_tagclouds_weighted(array $vars) {
 
 /**
  * Display Single Tag with Style
- * 
+ *
  */
 function tagclouds_display_term_link_weight($name, $tid, $weight, $description) {
   if ($term = taxonomy_term_load($tid)) {
-    $uri = entity_uri('taxonomy_term', $term);    
+    $uri = entity_uri('taxonomy_term', $term);
 	$uri['options']['attributes']['class'][] = 'tagclouds';
     $uri['options']['attributes']['class'][] = 'level' . $weight;
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
-    return "<span class='tagclouds-term'>" . l($name, $uri['path'], $uri['options']) . "</span>\n";      
+    return "<span class='tagclouds-term'>" . l($name, $uri['path'], $uri['options']) . "</span>\n";
   }
 }
 
 /**
  * Display Single Tag with Style
- * 
+ *
  */
 function tagclouds_display_node_link_count($name, $tid, $nid, $count, $description) {
   if ($term = taxonomy_term_load($tid) && $node = node_load($nid)) {
@@ -428,7 +428,7 @@ function tagclouds_block_info() {
 function tagclouds_block_view($delta = '') {
   $block = array();
   if ($voc = taxonomy_vocabulary_load($delta)) {
-    $blocks['subject'] = variable_get('tagclouds_block_title_' . $delta, t('Tags in @voc', 
+    $blocks['subject'] = variable_get('tagclouds_block_title_' . $delta, t('Tags in @voc',
             array('@voc' => $voc->name)));
     $tags = tagclouds_get_tags(array($delta), variable_get('tagclouds_levels', 6), variable_get('tagclouds_block_tags_' . $delta, 12));
 
@@ -448,7 +448,7 @@ function tagclouds_block_view($delta = '') {
  */
 function tagclouds_block_configure($delta = '') {
   $form = array();
-  
+
   $form['tags'] = array(
     '#type' => 'textfield',
     '#title' => t('Tags to show'),
