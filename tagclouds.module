@@ -329,18 +329,36 @@ function theme_tagclouds_weighted(array $vars) {
   $output = '';
   $display = variable_get('tagclouds_display_type', 'style');
 
+  if (module_exists('i18n_taxonomy')) {
+    $language = i18n_language();
+  }
+
   if ($display=='style') {
     foreach ($terms as $term) {
-      $output .= tagclouds_display_term_link_weight($term->name, $term->tid, $term->weight, $term->description);
+      if (module_exists('i18n_taxonomy')) {
+        $term_name = i18n_taxonomy_term_name($term, $language->language);
+        $term_desc = tagclouds_i18n_taxonomy_term_description($term, $language->language);
+      } else {
+        $term_name = $term->name;
+        $term_desc = $term->description;
+      }
+      $output .= tagclouds_display_term_link_weight($term_name, $term->tid, $term->weight, $term_desc);
     }
   }
   else {
     foreach ($terms as $term) {
+      if (module_exists('i18n_taxonomy')) {
+        $term_name = i18n_taxonomy_term_name($term, $language->language);
+        $term_desc = tagclouds_i18n_taxonomy_term_description($term, $language->language);
+      } else {
+        $term_name = $term->name;
+        $term_desc = $term->description;
+      }
       if ($term->count==1) {
-         $output .= tagclouds_display_node_link_count($term->name, $term->tid, $term->nid, $term->count, $term->description);
+         $output .= tagclouds_display_node_link_count($term_name, $term->tid, $term->nid, $term->count, $term_desc);
       }
       else {
-         $output .= tagclouds_display_term_link_count($term->name, $term->tid, $term->count, $term->description);
+         $output .= tagclouds_display_term_link_count($term_name, $term->tid, $term->count, $term_desc);
       }
     }
   }
@@ -354,7 +372,7 @@ function theme_tagclouds_weighted(array $vars) {
 function tagclouds_display_term_link_weight($name, $tid, $weight, $description) {
   if ($term = taxonomy_term_load($tid)) {
     $uri = entity_uri('taxonomy_term', $term);
-	$uri['options']['attributes']['class'][] = 'tagclouds';
+    $uri['options']['attributes']['class'][] = 'tagclouds';
     $uri['options']['attributes']['class'][] = 'level' . $weight;
     $uri['options']['attributes']['rel'] = 'tag';
     $uri['options']['attributes']['title'] = $description;
@@ -396,15 +414,27 @@ function tagclouds_display_term_link_count($name, $tid, $count, $description) {
  * @ingroup themable
  */
 function theme_tagclouds_list_box(array $vars) {
+  if (module_exists('i18n_taxonomy')) {
+    $language = i18n_language();
+  }
+
   $vocabulary = $vars['vocabulary'];
   $tags = $vars['tags'];
+
+  if (module_exists('i18n_taxonomy')) {
+    $voc_name = i18n_taxonomy_vocabulary_name($vocabulary, $language->language);
+    $voc_desc = tagclouds_i18n_taxonomy_vocabulary_description($vocabulary, $language->language);
+  } else {
+    $voc_name = $vocabulary->name;
+    $voc_desc = $vocabulary->description;
+  }
 
   $content = theme('tagclouds_weighted', array('terms' => $tags));
   $output = '';
   if ($vocabulary->description) {
-    $content = '<h2></h2><div>' . $vocabulary->description . '</div>' . $content;
+    $content = '<div>' . $voc_desc . '</div>' . $content;
   }
-  $output .= '<h2>' . $vocabulary->name . '</h2><div>' . $content . '</div>';
+  $output .= '<h2>' . $voc_name . '</h2><div>' . $content . '</div>';
 
   return $output;
 }
@@ -481,4 +511,20 @@ function tagclouds_theme() {
  */
 function tagclouds_vocs_load($ids){
   return explode(',',$ids);
+}
+
+/**
+ * Get localized term description unfiltered.
+ * Adapted from i18n_taxonomy_term_name(). Should moved to i18n, issue http://drupal.org/node/1704658.
+ */
+function tagclouds_i18n_taxonomy_term_description($term, $langcode = NULL) {
+  return i18n_taxonomy_vocabulary_mode($term->vid, I18N_MODE_LOCALIZE) ? i18n_string(array('taxonomy', 'term', $term->tid, 'description'), $term->description, array('langcode' => $langcode, 'sanitize' => FALSE)) : $term->description;
+}
+
+/**
+ * Get localized vocabulary description.
+ * Adapted from i18n_taxonomy_vocabulary_name(). Should moved to i18n, issue http://drupal.org/node/1704658.
+ */
+function tagclouds_i18n_taxonomy_vocabulary_description($vocabulary, $langcode = NULL) {
+  return i18n_object_langcode($vocabulary) ? $vocabulary->description : i18n_string(array('taxonomy', 'vocabulary', $vocabulary->vid, 'description'), $vocabulary->description, array('langcode' => $langcode));
 }
