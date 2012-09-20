@@ -81,6 +81,12 @@ function tagclouds_settings() {
     '#default_value' => variable_get('tagclouds_display_type', 'style'),
     '#description' => t('Determines the style of the page.'),
   );
+  $form['tagclouds_display_node_link'] = array(
+   '#type' => 'checkbox',
+   '#title' => t('Link term to node when only one content is tagged'),
+   '#default_value' => variable_get('tagclouds_display_node_link', true),
+   '#description' => t('When there is only one content tagged with a certain term, link that term to this node instead of the term list page.'),
+  );
   $form['tagclouds_page_amount'] = array(
     '#type' => 'textfield',
     '#size' => 5,
@@ -358,7 +364,7 @@ function theme_tagclouds_weighted(array $vars) {
         $term_name = $term->name;
         $term_desc = $term->description;
       }
-      if ($term->count==1) {
+      if ($term->count==1 && variable_get("tagclouds_display_node_link", false)) {
          $output .= tagclouds_display_node_link_count($term_name, $term->tid, $term->nid, $term->count, $term_desc);
       }
       else {
