@@ -466,7 +466,7 @@ function tagclouds_block_info() {
  * Implements hook_block_view().
  */
 function tagclouds_block_view($delta = '') {
-  $block = array();
+  $blocks = array();
   if ($voc = taxonomy_vocabulary_load($delta)) {
     $blocks['subject'] = variable_get('tagclouds_block_title_' . $delta, t('Tags in @voc',
             array('@voc' => $voc->name)));
