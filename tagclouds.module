@@ -108,12 +108,28 @@ function tagclouds_settings() {
 
   $lang = language_list('enabled');
   if(!empty($lang) && count($lang[1]) > 1){
-    $form['tagclouds_language_separation'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Separation of Tags per language for bundles/content types using node translation'),
-        '#default_value' => variable_get('tagclouds_language_separation', 0),
-        '#description' => t('If you have more than one language installed and your content type/bundle is configured to use node translation (one language per node) then this setting would allow you to separate the tags for each language. '),
-    );
+    /* select this option if you want language separation and the site 
+           is using node translation rather than entity_translation */
+    if (!module_exists('entity_translation')) {
+      $form['tagclouds_language_separation'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Separation of Tags per language for bundles/content types using node translation'),
+          '#default_value' => variable_get('tagclouds_language_separation', 0),
+          '#description' => t('If you have more than one language installed and your content type/bundle is configured to use node translation (one language per node) then this setting would allow you to separate the tags for each language. '),
+      );
+    } else { //entity translation is enabled
+      $form['tagclouds_language_separation_radios'] = array(
+          '#type' => 'radios',
+          '#title' => t('Separation of Tags per language'),
+          '#options' => array('0'=>t('Disable separation by language'),
+                              '1'=>t('Separation of Tags per language for site configured to use node translation (Choose this if you have one language per node , but no entity/field translations for the node fields and your taxonomy/vocabulary is not entity translation enabled)'),
+                              'entity'=>t('Separation of Tags per language per entity. (Choose this if your content type/bundle is configured to use field translation aka entity translation and your tagcloudable taxonomy/vocabulary is translation enabled each term has a translation)')
+                              ),
+          '#default_value' => variable_get('tagclouds_language_separation_radios', '0'),
+          '#description' => t('*Choose tagclouds language separation method.'),
+          '#required'=>TRUE
+      );
+    }
   }
 
   return system_settings_form($form);
@@ -225,7 +241,31 @@ function tagclouds_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     $query->addExpression('max(n.nid)', 'nid');
     $query->join('taxonomy_index', 'tn', 'td.tid = tn.tid');
     $query->join('node', 'n', 'tn.nid = n.nid');
-    if (variable_get('tagclouds_language_separation', 0)) $query->condition('n.language', $language->language);
+    if (!module_exists('entity_translation')) {
+      if (variable_get('tagclouds_language_separation', 0)) {
+        $query->condition('n.language', $language->language);
+        /* site is using node translation rather than entity_translation
+           this will return taxonomy terms for that node translation
+           unfortunately this will not work well for bundles/content types that are 
+           (entity translation enabled /field translated) */
+      }
+    } else { // entity translation module is enabled
+      if (variable_get('tagclouds_language_separation_radios', 0)=='entity') {
+          /* TODO: would be nice to enhance tagclouds so that a translation enabled field_data_field_example-term-reference (example)
+            can be used as a language condition for tid rather than taxonomy_index.  This would work
+            much better for entity translation due to the fact that some terms are spelled exactly the
+            same in more than one language so a translation enabled term reference will work best for
+            this scenario.  This will require adding interface code to allow users to select the
+            term-reference fields they want to tagcloud rather than select a taxonomy vocabulary */
+          /*if using entity_translation you must add a condition on the term language
+            rather than the node language as node language only finds nodes with
+            'source' language = $language.  Using term language is more appropriate
+            for entity_translation scenarios*/
+          $query->condition('td.language', $language->language);
+      } elseif (variable_get('tagclouds_language_separation_radios', 0) == 1 ) {
+        $query->condition('n.language', $language->language);
+      }
+    }
     $query->condition('td.vid', $vids);
     $query->condition('n.status', 1);
     $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');//->groupBy('tn.nid');
