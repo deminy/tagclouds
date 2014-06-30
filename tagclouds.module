@@ -110,9 +110,9 @@ function tagclouds_settings() {
   if(!empty($lang) && count($lang[1]) > 1){
     $form['tagclouds_language_separation'] = array(
         '#type' => 'checkbox',
-        '#title' => t('Separation of Tags per language'),
+        '#title' => t('Separation of Tags per language for bundles/content types using node translation'),
         '#default_value' => variable_get('tagclouds_language_separation', 0),
-        '#description' => t('If you have more than one language installed this setting would allow you to separate the tags for each language.'),
+        '#description' => t('If you have more than one language installed and your content type/bundle is configured to use node translation (one language per node) then this setting would allow you to separate the tags for each language. '),
     );
   }
 
@@ -222,15 +222,15 @@ function tagclouds_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     $query = db_select('taxonomy_term_data', 'td');
     $query->addExpression('COUNT(*)', 'count');
     $query->fields('td',array('tid', 'vid', 'name', 'description'));
-    $query->fields('tn',array('nid'));
+    $query->addExpression('max(n.nid)', 'nid');
     $query->join('taxonomy_index', 'tn', 'td.tid = tn.tid');
     $query->join('node', 'n', 'tn.nid = n.nid');
     if (variable_get('tagclouds_language_separation', 0)) $query->condition('n.language', $language->language);
     $query->condition('td.vid', $vids);
     $query->condition('n.status', 1);
-    $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');
-    $query->groupBy('td.description HAVING count > 0');
-    $query->orderBy('count', 'DESC');
+    $query->groupBy('td.tid')->groupBy('td.vid')->groupBy('td.name');//->groupBy('tn.nid');
+    $query->groupBy('td.description HAVING COUNT(*) > 0');
+    $query->orderBy('COUNT(*)', 'DESC');
     if ($size > 0) $query->range(0, $size);
     $result = $query->execute();
 
