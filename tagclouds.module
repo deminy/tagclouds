@@ -570,7 +570,7 @@ function tagclouds_theme() {
 }
 
 /**
- * Implements hook_load()
+ * Implements hook_load().
  */
 function tagclouds_vocs_load($ids){
   return explode(',',$ids);
