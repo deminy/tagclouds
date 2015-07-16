@@ -272,6 +272,9 @@ function tagclouds_get_tags($vids, $steps = 6, $size = 60, $display = NULL) {
     $query->groupBy('td.description HAVING COUNT(*) > 0');
     $query->orderBy('COUNT(*)', 'DESC');
     if ($size > 0) $query->range(0, $size);
+
+    drupal_alter('tagclouds_get_tags_query', $query);
+
     $result = $query->execute();
 
     foreach ($result as $tag) {
