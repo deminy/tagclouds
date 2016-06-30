@@ -396,7 +396,7 @@ function theme_tagclouds_weighted(array $vars) {
     foreach ($terms as $term) {
       if (module_exists('i18n_taxonomy')) {
         $term_name = i18n_taxonomy_term_name($term, $language->language);
-        $term_desc = tagclouds_i18n_taxonomy_term_description($term, $language->language);
+        $term_desc = i18n_taxonomy_term_description($term, $language->language);
       } else {
         $term_name = $term->name;
         $term_desc = $term->description;
@@ -414,7 +414,7 @@ function theme_tagclouds_weighted(array $vars) {
     foreach ($terms as $term) {
       if (module_exists('i18n_taxonomy')) {
         $term_name = i18n_taxonomy_term_name($term, $language->language);
-        $term_desc = tagclouds_i18n_taxonomy_term_description($term, $language->language);
+        $term_desc = i18n_taxonomy_term_description($term, $language->language);
       } else {
         $term_name = $term->name;
         $term_desc = $term->description;
@@ -495,7 +495,7 @@ function theme_tagclouds_list_box(array $vars) {
 
   if (module_exists('i18n_taxonomy')) {
     $voc_name = i18n_taxonomy_vocabulary_name($vocabulary, $language->language);
-    $voc_desc = tagclouds_i18n_taxonomy_vocabulary_description($vocabulary, $language->language);
+    $voc_desc = i18n_taxonomy_vocabulary_description($vocabulary, $language->language);
   } else {
     $voc_name = $vocabulary->name;
     $voc_desc = $vocabulary->description;
@@ -590,20 +590,4 @@ function tagclouds_theme() {
  */
 function tagclouds_vocs_load($ids){
   return explode(',',$ids);
-}
-
-/**
- * Get localized term description unfiltered.
- * Adapted from i18n_taxonomy_term_name(). Should moved to i18n, issue http://drupal.org/node/1704658.
- */
-function tagclouds_i18n_taxonomy_term_description($term, $langcode = NULL) {
-  return i18n_taxonomy_vocabulary_mode($term->vid, I18N_MODE_LOCALIZE) ? i18n_string(array('taxonomy', 'term', $term->tid, 'description'), $term->description, array('langcode' => $langcode, 'sanitize' => FALSE)) : $term->description;
-}
-
-/**
- * Get localized vocabulary description.
- * Adapted from i18n_taxonomy_vocabulary_name(). Should moved to i18n, issue http://drupal.org/node/1704658.
- */
-function tagclouds_i18n_taxonomy_vocabulary_description($vocabulary, $langcode = NULL) {
-  return i18n_object_langcode($vocabulary) ? $vocabulary->description : i18n_string(array('taxonomy', 'vocabulary', $vocabulary->vid, 'description'), $vocabulary->description, array('langcode' => $langcode));
 }
