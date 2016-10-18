@@ -1,6 +1,6 @@
 name = TagClouds
 description = TagClouds makes weighted tag clouds from your taxonomy terms.
 core = 7.x
-dependencies[] = taxonomy
+dependencies[] = drupal:taxonomy
 package = "Taxonomy"
 configure = admin/config/content/tagclouds
